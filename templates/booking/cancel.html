@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block wrapper %}
+  <p id="ligne1">Annuler une réservation</p>
+  {% if first %}
+    <form action="{% url 'booking:cancelJourney' %}" method="GET">
+      <table align="center" class="tableau">
+  	    <tr>
+          <td>{{ form.departureDate.label }} {{ form.departureDate }}</td>
+          <td>{{ form.email.label }} {{ form.email }}</td>
+          <td valign="bottom"><button class="btn btn-success" type="submit"/>Rechercher</button></td>
+        </tr>    	    
+      </table>
+    </form>
+    <br /><br />
+  {% endif %} 
+  {% if cancel %}
+        <div align="center">
+      <table class="tableau" width="60%">        
+        <form action="{% url 'booking:cancelJourney' %}" method="POST">
+        {% csrf_token %}
+          {% for c in cancel %}
+        <tr>
+          <td align="left" colspan="3">Destination: {{ c.destination }}</td>
+        </tr>
+        <br />
+        <tr>
+          <td align="left">Date de départ: {{ c.departureDate }}</td>
+          <td align="left">Heure de départ: {{ c.departureTime }}</td>
+          <td align="left">Nom: {{ c.lastname }}</td>
+          <td align="left">Prénom: {{ c.firstname }}</td>
+        </tr>
+        <tr>
+          <input type="hidden" name="id" value="{{ c.id }}">
+          <td align="center" colspan="4">
+            <button type="submit" class="btn btn-success">Annuler la réservation</button>
+          </td>
+        </tr>
+           {% endfor %}
+        </form>
+      </table>
+      <div>      
+
+  {% elif message %}
+    <div>
+    	<br />
+  	  <table class="tableau" width="60%" align="center">
+  	  	<tr>
+  	  		<td>Aucune réservation n'a été trouvée à cette date pour cet utilisateur</td>
+  	  	</tr>
+  		<tr>
+  		  <td>
+  		  <form>
+	    <input type="button" class="button1" value="Page précédente" onclick="history.go(-1)">
+	      </form>
+	      </td>
+	    </tr>
+      </table>
+    </div>
+  {% elif delete %}
+    <div>
+    	<br />
+  	  <table class="tableau" width="60%" align="center">
+  	  	<tr>
+  	  		<td>La réservation a bien été annulée. Merci de votre confiance.</td>
+  	  	</tr>
+  		<tr>
+  		  <td>
+  		  <a href="{% url 'booking:index' %}">
+	    <input type="button" class="button1" value="Retour à l'Accueil">
+	      </a>
+	      </td>
+	    </tr>
+      </table>
+    </div>
+
+  {% endif %}
+
+
+{% endblock %}
+

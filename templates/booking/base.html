@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %} {% endblock %}</title>
+        <div id="stylesheets">
+            {% block stylesheets %}
+              <!-- <link href="asset('css/style.css')" rel="stylesheet" /> -->
+              <link href="{% static 'booking/assets/css/styles.css' %}" rel="stylesheet" />
+            {% endblock %}
+    </head>
+    <body>
+        <div id="wrapper">
+        	{% block wrapper %}
+
+            {% endblock %}        	
+    	</div>        
+    </body>
+</html>

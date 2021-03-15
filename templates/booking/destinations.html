@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block wrapper %}
+	<form action="{% url 'booking:selectJourney' %}" method="POST">
+    {% csrf_token %}
+  <p id="ligne1">Destination : <span id="destination">{{ destination }}</span></p>
+  <p class="ligne2">Distance du trajet : <span id="laDistance"></p>
+  <p>
+  	<table align="center" class="tableau">
+  	  <tr>
+        <td>{{ form.lastname.label }} {{ form.lastname }}</td>
+        <td>{{ form.firstname.label }} {{ form.firstname }}</td>
+        <td>{{ form.email.label }} {{ form.email }}</td>
+      </tr>    	    
+    </table>
+  </p>
+  <p>
+  	<table align="center" class="tableau">
+      <tr>
+        <td>{{ form.departureDate.label }} {{ form.departureDate }}</td>
+        <td>{{ form.hour.label }} {{ form.hour }}</td>
+        <td>{{ form.minute.label }} {{ form.minute }}</td>
+        <td>{{ form.sharing.label }} {{ form.sharing }}</td>
+        <td valign="bottom"><button type="submit" class="btn btn-success">Afficher le tarif</button></td> 
+      </tr>
+    </table>
+        <!-- Voir s'il est vraiment nécessaire d'inclure ces 2 variables dans POST -->
+        <input type="hidden" value="{{ destination }}" name="destination">
+        <input type="hidden" id="distance" name="distance" value="">
+    </form>
+  </p>
+  <br><br>
+<!-- Si on a pricesDict, c'est qu'on a d'autres réservations à cette date et destination -->
+  {% if pricesDict %}
+    {% if departureTime in pricesDict.keys %} 
+      <div align="center">
+      <table class="tableau" width="60%">        
+        <form action="{% url 'booking:recordJourney' %}" method="POST">
+        {% csrf_token %}
+        <tr>
+          <td align="left">Heure de départ: {{ departureTime }}</td>
+          <td align="right"> Tarif: {{ prixCourse }} euros TTC</td>
+          <input type="hidden" name="destination" value="{{ destination }}">
+          <input type="hidden" name="departureDate" value="{{ departureDate }}">
+          <input type="hidden" name="departureTime" value="{{ key }}">
+          <input type="hidden" name="sharing" value="{{ sharing }}">
+          <input type="hidden" name="firstname" value="{{ firstname }}">
+          <input type="hidden" name="lastname" value="{{ lastname }}">
+          <input type="hidden" name="email" value="{{ email }}">
+          <input type="hidden" name="prixCourse" value="{{ prixCourse }}">
+          <td align="right">
+            <button type="submit" class="btn btn-success">Je choisis cet horaire</button>
+          </td>
+        </tr>
+        </form>
+      </table>
+      <div>      
+    {% else %}      
+      <div align="center">
+      <table class="tableau" width="60%">        
+        <form action="{% url 'booking:recordJourney' %}" method="POST">
+        {% csrf_token %}
+        <tr>
+          <td align="left">Heure de départ: {{ departureTime }}</td>
+          <td align="right"> Tarif: {{ prixCourse }} euros TTC</td>
+          <input type="hidden" name="destination" value="{{ destination }}">
+          <input type="hidden" name="departureDate" value="{{ departureDate }}">
+          <input type="hidden" name="departureTime" value="{{ departureTime }}">
+          <input type="hidden" name="sharing" value="{{ sharing }}">
+          <input type="hidden" name="firstname" value="{{ firstname }}">
+          <input type="hidden" name="lastname" value="{{ lastname }}">
+          <input type="hidden" name="email" value="{{ email }}">
+          <input type="hidden" name="prixCourse" value="{{ prixCourse }}">
+          <td align="right">
+            <button type="submit" class="btn btn-success">Je choisis cet horaire</button>
+          </td>
+        </tr>
+        </form>
+      </table>
+      <div>      
+    {% endif %}
+<!-- On affiche les autres tarifs pour le même jour et même destination -->
+      <br /><br />
+      <div align="center">
+        <p style="color:yellow;">Les autres tarifs pour cette destination le même jour:</p>
+      </div>
+    {% for key, prixCourse in pricesDict.items %}    
+      {% if key != departureTime %}
+      
+      <div align="center">
+      <table class="tableau" width="60%">        
+        <form action="{% url 'booking:recordJourney' %}" method="POST">
+        {% csrf_token %}
+        <tr>
+          <td align="left">Heure de départ: {{ key }}</td>
+          <td align="right"> Tarif: {{ prixCourse }} euros TTC</td>
+          <input type="hidden" name="destination" value="{{ destination }}">
+          <input type="hidden" name="departureDate" value="{{ departureDate }}">
+          <input type="hidden" name="departureTime" value="{{ key }}">
+          <input type="hidden" name="sharing" value="{{ sharing }}">
+          <input type="hidden" name="firstname" value="{{ firstname }}">
+          <input type="hidden" name="lastname" value="{{ lastname }}">
+          <input type="hidden" name="email" value="{{ email }}">
+          <input type="hidden" name="prixCourse" value="{{ prixCourse }}">
+          <td align="right">
+            <button type="submit" class="btn btn-success">Je choisis cet horaire</button>
+          </td>
+        </tr>
+        </form>
+      </table>
+      <div>
+      {% endif %}      
+    {% endfor %} 
+
+  {% elif onlyOne %} 
+    <div align="center">
+      <table class="tableau" width="60%">
+      <form action="{% url 'booking:recordJourney' %}" method="POST">
+      {% csrf_token %}       
+        <tr>
+          <td align="left">Heure de départ: {{ departureTime }}  </td>
+          <td align="right"> Tarif: {{ prixCourse }} euros TTC</td>
+          <input type="hidden" name="destination" value="{{ destination }}">
+          <input type="hidden" name="departureDate" value="{{ departureDate }}">
+          <input type="hidden" name="departureTime" value="{{ departureTime }}">
+          <input type="hidden" name="sharing" value="{{ sharing }}">
+          <input type="hidden" name="firstname" value="{{ firstname }}">
+          <input type="hidden" name="lastname" value="{{ lastname }}">
+          <input type="hidden" name="email" value="{{ email }}">
+          <input type="hidden" name="prixCourse" value="{{ prixCourse }}">
+          <td align="right">
+            <button type="submit" class="btn btn-success">Je choisis cet horaire</button>
+          </td>
+        </tr>
+      </form>        
+      </table>    
+    <div>  
+
+  {% endif %}
+
+<br /><br /><br />
+
+<script src="{% static 'booking/assets/js/get_distance_time.js' %}"></script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ googleApiKey }}&callback=initMap"></script>
+
+{% endblock %}
+
